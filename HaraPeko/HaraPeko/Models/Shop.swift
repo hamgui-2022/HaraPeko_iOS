@@ -20,7 +20,7 @@ struct Shop: Decodable, Identifiable {
     let budget: Budget?
     let photo: Photo
     let open: String?       // 営業時間
-    let cloase: String?     // 定休日
+    let close: String?     // 定休日
     let urls: URLs?
     
     struct Genre: Decodable {
