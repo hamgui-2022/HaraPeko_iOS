@@ -46,6 +46,13 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
     /// 許可状態が変わったとき（初回ダイアログへの回答含む）に呼ばれる。
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         authorizationStatus = manager.authorizationStatus
+        // 許可されたら自動的に現在地を１回取得
+        switch authorizationStatus {
+        case .authorizedWhenInUse, .authorizedAlways:
+            manager.requestLocation()
+        default:
+            break
+        }
     }
 
     /// 現在地の取得に成功したとき。
