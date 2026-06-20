@@ -11,7 +11,7 @@ import SwiftUI
 struct HaraPekoApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SearchView()
         }
     }
 }

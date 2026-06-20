@@ -8,6 +8,8 @@
 // この段階では、全体レイアウト（ヘッダー・スクロール領域・固定CTA）の骨組みのみ
 
 import SwiftUI
+import CoreLocation
+import UIKit        // 設定アプリを開くため
 
 struct SearchView: View {
     @State private var viewModel = SearchViewModel()
@@ -27,6 +29,8 @@ struct SearchView: View {
                         .font(.pretendard(.bold, size: 18))
                         .foregroundStyle(.hpText)
                     
+                    locationCard
+                    
                     radiusSection
                     
                     // TODO: 現在地カード／ジャンル／キーワード／予算
@@ -38,6 +42,7 @@ struct SearchView: View {
             
             searchButton
         }
+        .onAppear { viewModel.onAppear() }
     }
     
     // MARK: - ブランドヘッダー
@@ -75,6 +80,113 @@ struct SearchView: View {
                         .fill(Color.hpSurface)
                         .stroke(Color.hpLine, lineWidth: 1)
                 )
+        }
+    }
+    
+    // MARK: - 現在地カード
+    
+    private var locationCard: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 12) {
+                // アイコン
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12).fill(Color.hpEmberDim)
+                    Image(systemName: "location.fill")
+                        .font(.system(size: 18))
+                        .foregroundStyle(.hpEmber)
+                }
+                .frame(width: 40, height: 40)
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("現在地")
+                        .font(.pretendard(.regular, size: 10))
+                        .foregroundStyle(.hpSubText)
+                    Text(locationPrimaryText)
+                        .font(.pretendard(.semiBold, size: 15))
+                        .foregroundStyle(.hpText)
+                        .lineLimit(1)
+                }
+                
+                Spacer()
+                
+                gpsBadge
+            }
+            .padding(14)
+            .background(
+                RoundedRectangle(cornerRadius: 15)
+                    .fill(Color.hpSurface)
+                    .stroke(Color.hpLine, lineWidth: 1)
+            )
+            
+            statusLine
+        }
+    }
+    
+    private var gpsBadge: some View {
+        let isOn = (viewModel.coordinate != nil)
+        return HStack(spacing: 5) {
+            Image(systemName: "scope")
+                .font(.system(size: 11))
+            Text(isOn ? "GPS ON" : "GPS OFF")
+                .font(.pretendard(.semiBold, size: 10))
+        }
+        .foregroundStyle(isOn ? Color.hpEmber : .hpSubText)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
+        .overlay(
+            Capsule()
+                .stroke(isOn ? Color.hpEmber : Color.hpLine, lineWidth: 1)
+        )
+    }
+    
+    /// カード中央に出す主テキスト（状態の出し分け）
+    private var locationPrimaryText: String {
+        switch viewModel.authorizationStatus {
+        case .denied, .restricted:
+            "位置情報が許可されていません"
+        default:
+            if let c = viewModel.coordinate {
+                String(format: "緯度 %.4f, 軽度 %.4f", c.latitude, c.longitude)
+            } else {
+                "現在地を取得中..."
+            }
+        }
+    }
+    
+    /// カード下の状態行（状態で出し分け）
+    @ViewBuilder
+    private var statusLine: some View {
+        switch viewModel.authorizationStatus {
+        case .denied, .restricted:
+            HStack(spacing: 6) {
+                Text("設定アプリから位置情報を許可してください")
+                Button("設定を開く") {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(url)
+                    }
+                }
+                .font(.pretendard(.semiBold, size: 10))
+                .foregroundStyle(.hpEmber)
+            }
+            .font(.pretendard(.regular, size: 10))
+            .foregroundStyle(.hpSubText)
+            .padding(.horizontal, 2)
+            
+        default:
+            HStack(spacing: 6) {
+                if viewModel.coordinate != nil {
+                    Circle().fill(.green).frame(width: 6, height: 6)
+                    Text("現在地を取得しました")
+                } else {
+                    ProgressView()
+                        .scaleEffect(0.6)
+                        .tint(.hpSubText)
+                    Text("現在地を取得中...")
+                }
+            }
+            .font(.pretendard(.regular, size: 10))
+            .foregroundStyle(.hpSubText)
+            .padding(.horizontal, 2)
         }
     }
     
