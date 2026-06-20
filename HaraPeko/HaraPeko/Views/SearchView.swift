@@ -34,6 +34,17 @@ struct SearchView: View {
                     radiusSection
                     
                     // TODO: 現在地カード／ジャンル／キーワード／予算
+                    
+                    // TODO（仮）：動作確認用、次の「検索結果画面」で置き換える
+                    if let error = viewModel.errorMessage {
+                        Text(error)
+                            .font(.pretendard(.medium, size: 12))
+                            .foregroundStyle(.red)
+                    } else if !viewModel.shops.isEmpty {
+                        Text("\(viewModel.shops.count)件ヒット（先頭：\(viewModel.shops.first?.name ?? "-")")
+                            .font(.pretendard(.medium, size: 12))
+                            .foregroundStyle(.hpMoon)
+                    }
                 }
                 .padding(.horizontal, 18)
                 .padding(.top, 8)
@@ -255,13 +266,18 @@ struct SearchView: View {
     
     private var searchButton: some View {
         Button {
-            // TODO: 検索を実行して結果画面へ移動（遷移）
+            Task { await viewModel.search() }
         } label: {
             HStack(spacing: 10) {
-                Image(systemName: "pawprint.fill")
-                    .font(.system(size: 20))
-                Text("獲物を探す")
-                    .font(.pretendard(.bold, size: 16))
+                if viewModel.isLoading {
+                    ProgressView()
+                        .tint(.white)
+                } else {
+                    Image(systemName: "pawprint.fill")
+                        .font(.system(size: 20))
+                    Text("獲物を探す")
+                        .font(.pretendard(.bold, size: 16))
+                }
             }
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)

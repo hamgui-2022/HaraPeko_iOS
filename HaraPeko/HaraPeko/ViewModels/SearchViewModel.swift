@@ -12,6 +12,7 @@ import CoreLocation
 import MapKit
 import Observation
 
+@MainActor
 @Observable
 final class SearchViewModel {
     /// 選択中の検索半径（必須・デフォルトは1km）
@@ -31,6 +32,32 @@ final class SearchViewModel {
     /// 取得した現在地の座標（未取得ならnil）
     var coordinate: CLLocationCoordinate2D? {
         locationManager.currentLocation?.coordinate
+    }
+    
+    /// 検索結果の店舗一覧
+    var shops: [Shop] = []
+    /// 検索中フラグ
+    var isLoading = false
+    /// エラーメッセージ（なけらばnil）
+    var errorMessage: String?
+    
+    private let apiClient = HotPepperAPIClient()
+    
+    /// 現在地と検索半径で飲食店を検索
+    func search() async {
+        guard let coordinate else {
+            errorMessage = "現在地が取得できていません。位置情報を許可してください。"
+            return
+        }
+        isLoading = true
+        errorMessage = nil
+        do {
+            shops = try await apiClient.searchShops(coordinate: coordinate, range: selectedRange)
+        } catch {
+            errorMessage = error.localizedDescription
+            shops = []
+        }
+        isLoading = false
     }
     
     /// 画面表示時に呼ぶ。位置情報の許可をリクエスト
