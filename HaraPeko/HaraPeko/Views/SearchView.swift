@@ -43,6 +43,9 @@ struct SearchView: View {
             searchButton
         }
         .onAppear { viewModel.onAppear() }
+        .onChange(of: viewModel.coordinate?.latitude) {
+            viewModel.reverseGeocode()
+        }
     }
     
     // MARK: - ブランドヘッダー
@@ -145,7 +148,9 @@ struct SearchView: View {
         case .denied, .restricted:
             "位置情報が許可されていません"
         default:
-            if let c = viewModel.coordinate {
+            if let name = viewModel.locationName {
+                name
+            } else if let c = viewModel.coordinate {
                 String(format: "緯度 %.4f, 軽度 %.4f", c.latitude, c.longitude)
             } else {
                 "現在地を取得中..."

@@ -19,6 +19,11 @@ final class SearchViewModel {
     /// 位置情報サービス
     let locationManager = LocationManager()
     
+    /// 逆ジオコーディングで得られる地名（例：渋谷区、東京都）。未取得の場合は：nil
+    private(set) var locationName: String?
+    
+    private let geocoder = CLGeocoder()
+    
     /// 現在の許可状態
     var authorizationStatus: CLAuthorizationStatus {
         locationManager.authorizationStatus
@@ -32,5 +37,29 @@ final class SearchViewModel {
     /// 画面表示時に呼ぶ。位置情報の許可をリクエスト
     func onAppear() {
         locationManager.requestPermission()
+    }
+    
+    /// 現在地の座標から地名を求める。座標が変わるたびにViewから呼ぶ
+    func reverseGeocode() {
+        guard let coordinate else {
+            locationName = nil
+            return
+        }
+        let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        Task {
+            let placemarks = try? await geocoder.reverseGeocodeLocation(location, preferredLocale: Locale(identifier: "ja_JP"))
+            let name = placemarks?.first.flatMap(Self.placeName(from:))
+            await MainActor.run { locationName = name }
+        }
+    }
+    
+    /// CLPlacemarkから「市区町村、都道府県」形式の文字列を作る
+    private static func placeName(from placemark: CLPlacemark) -> String? {
+        let area = placemark.locality ?? placemark.administrativeArea
+        guard let area else { return nil }
+        if let admin = placemark.administrativeArea, admin != area {
+            return "\(area), \(admin)"
+        }
+        return area
     }
 }
