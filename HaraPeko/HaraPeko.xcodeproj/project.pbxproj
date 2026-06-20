@@ -10,9 +10,22 @@
 		652CD6862FE3E93A003BEBFE /* HaraPeko.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HaraPeko.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		6591C2A92FE65ED700921B49 /* Exceptions for "HaraPeko" folder in "HaraPeko" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 652CD6852FE3E93A003BEBFE /* HaraPeko */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		652CD6882FE3E93A003BEBFE /* HaraPeko */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				6591C2A92FE65ED700921B49 /* Exceptions for "HaraPeko" folder in "HaraPeko" target */,
+			);
 			path = HaraPeko;
 			sourceTree = "<group>";
 		};
@@ -127,6 +140,8 @@
 /* Begin XCBuildConfiguration section */
 		652CD68F2FE3E93C003BEBFE /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 652CD6882FE3E93A003BEBFE /* HaraPeko */;
+			baseConfigurationReferenceRelativePath = Secrets.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -191,6 +206,8 @@
 		};
 		652CD6902FE3E93C003BEBFE /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 652CD6882FE3E93A003BEBFE /* HaraPeko */;
+			baseConfigurationReferenceRelativePath = Secrets.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -248,6 +265,8 @@
 		};
 		652CD6922FE3E93C003BEBFE /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 652CD6882FE3E93A003BEBFE /* HaraPeko */;
+			baseConfigurationReferenceRelativePath = Secrets.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -256,6 +275,7 @@
 				DEVELOPMENT_TEAM = L597NTA7LF;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = HaraPeko/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -281,6 +301,8 @@
 		};
 		652CD6932FE3E93C003BEBFE /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 652CD6882FE3E93A003BEBFE /* HaraPeko */;
+			baseConfigurationReferenceRelativePath = Secrets.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -289,6 +311,7 @@
 				DEVELOPMENT_TEAM = L597NTA7LF;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = HaraPeko/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

@@ -1,0 +1,11 @@
+// Config.example.xcconfig
+//
+// このファイルは「テンプレート」です（Git にコミットされます）。
+// 使い方:
+//   1. このファイルをコピーして同じ階層に「Secrets.xcconfig」を作成する
+//   2. Secrets.xcconfig の値を、実際に取得した HotPepper API キーに書き換える
+//   3. Secrets.xcconfig は .gitignore により Git にコミットされません
+//
+// ※ 値に「//」を含めないでください（xcconfig ではコメント扱いになります）
+
+HOTPEPPER_API_KEY = your_api_key_here
