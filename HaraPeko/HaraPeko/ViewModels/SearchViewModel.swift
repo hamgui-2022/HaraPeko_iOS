@@ -9,6 +9,7 @@
 //
 
 import CoreLocation
+import MapKit
 import Observation
 
 @Observable
@@ -21,9 +22,7 @@ final class SearchViewModel {
     
     /// 逆ジオコーディングで得られる地名（例：渋谷区、東京都）。未取得の場合は：nil
     private(set) var locationName: String?
-    
-    private let geocoder = CLGeocoder()
-    
+        
     /// 現在の許可状態
     var authorizationStatus: CLAuthorizationStatus {
         locationManager.authorizationStatus
@@ -47,8 +46,10 @@ final class SearchViewModel {
         }
         let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
         Task {
-            let placemarks = try? await geocoder.reverseGeocodeLocation(location, preferredLocale: Locale(identifier: "ja_JP"))
-            let name = placemarks?.first.flatMap(Self.placeName(from:))
+            guard let request = MKReverseGeocodingRequest(location: location) else { return }
+            let mapItems = try? await request.mapItems
+            // 整形済みの短い住所を優先。なければ地点名にフォールバック
+            let name = mapItems?.first?.address?.shortAddress ?? mapItems?.first?.name
             await MainActor.run { locationName = name }
         }
     }
