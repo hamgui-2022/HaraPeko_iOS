@@ -4,6 +4,8 @@
 <dict>
 	<key>HotPepperAPIKey</key>
 	<string>$(HOTPEPPER_API_KEY)</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>現在地周辺の飲食店を検索するために位置情報を使用します。</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>PretendardJP-Thin.otf</string>
