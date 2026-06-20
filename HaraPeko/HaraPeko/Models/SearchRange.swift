@@ -37,4 +37,7 @@ enum SearchRange: Int, CaseIterable, Identifiable {
         default:            "km"
         }
     }
+    
+    /// 表示用ラベル（例：300m, 1km）
+    var label: String { title + unit }
 }

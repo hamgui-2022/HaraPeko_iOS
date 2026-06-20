@@ -13,49 +13,55 @@ import UIKit        // 設定アプリを開くため
 
 struct SearchView: View {
     @State private var viewModel = SearchViewModel()
-//
+    @State private var showResults = false
     
     var body: some View {
-        ZStack(alignment: .bottom) {
-            // 画面全体の背景
-            Color.hpBackground.ignoresSafeArea()
-            
-            // スクロールする検索条件エリア
-            ScrollView {
-                VStack(alignment: .leading, spacing: 22) {
-                    brandHeader
-                    
-                    Text("検索条件を入力")
-                        .font(.pretendard(.bold, size: 18))
-                        .foregroundStyle(.hpText)
-                    
-                    locationCard
-                    
-                    radiusSection
-                    
-                    // TODO: 現在地カード／ジャンル／キーワード／予算
-                    
-                    // TODO（仮）：動作確認用、次の「検索結果画面」で置き換える
-                    if let error = viewModel.errorMessage {
-                        Text(error)
-                            .font(.pretendard(.medium, size: 12))
-                            .foregroundStyle(.red)
-                    } else if !viewModel.shops.isEmpty {
-                        Text("\(viewModel.shops.count)件ヒット（先頭：\(viewModel.shops.first?.name ?? "-")")
-                            .font(.pretendard(.medium, size: 12))
-                            .foregroundStyle(.hpMoon)
+        NavigationStack {
+            ZStack(alignment: .bottom) {
+                // 画面全体の背景
+                Color.hpBackground.ignoresSafeArea()
+                
+                // スクロールする検索条件エリア
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 22) {
+                        brandHeader
+                        
+                        Text("検索条件を入力")
+                            .font(.pretendard(.bold, size: 18))
+                            .foregroundStyle(.hpText)
+                        
+                        locationCard
+                        
+                        radiusSection
+                        
+                        // TODO: ／ジャンル／キーワード／予算
+                        
+                        if let error = viewModel.errorMessage {
+                            Text(error)
+                                .font(.pretendard(.medium, size: 12))
+                                .foregroundStyle(.red)
+                        }
                     }
+                    .padding(.horizontal, 18)
+                    .padding(.top, 8)
+                    .padding(.bottom, 120) // 固定CTAに隠れないよう余白を確保
                 }
-                .padding(.horizontal, 18)
-                .padding(.top, 8)
-                .padding(.bottom, 120) // 固定CTAに隠れないよう余白を確保
+                
+                searchButton
             }
-            
-            searchButton
-        }
-        .onAppear { viewModel.onAppear() }
-        .onChange(of: viewModel.coordinate?.latitude) {
-            viewModel.reverseGeocode()
+            .toolbar(.hidden, for: .navigationBar)
+            .onAppear { viewModel.onAppear() }
+            .onChange(of: viewModel.coordinate?.latitude) {
+                viewModel.reverseGeocode()
+            }
+            .navigationDestination(isPresented: $showResults) {
+                ResultListView(
+                    shops: viewModel.shops,
+                    locationName: viewModel.locationName,
+                    range: viewModel.selectedRange,
+                    userCoordinate: viewModel.coordinate
+                )
+            }
         }
     }
     
@@ -266,7 +272,12 @@ struct SearchView: View {
     
     private var searchButton: some View {
         Button {
-            Task { await viewModel.search() }
+            Task {
+                await viewModel.search()
+                if viewModel.errorMessage == nil {
+                    showResults = true
+                }
+            }
         } label: {
             HStack(spacing: 10) {
                 if viewModel.isLoading {
