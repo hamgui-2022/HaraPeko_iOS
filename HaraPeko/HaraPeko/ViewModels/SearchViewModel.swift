@@ -18,6 +18,12 @@ final class SearchViewModel {
     /// 選択中の検索半径（必須・デフォルトは1km）
     var selectedRange: SearchRange = .r1000
     
+    /// 選択中のジャンル（nil = すべて / 絞り込みなし）
+    var selectedGenre: SearchGenre?
+    
+    /// 選択中の予算（nil = 指定なし）
+    var selectedBudget: SearchBudget?
+    
     /// 位置情報サービス
     let locationManager = LocationManager()
     
@@ -62,7 +68,14 @@ final class SearchViewModel {
         isLoading = true
         errorMessage = nil
         do {
-            let results = try await apiClient.searchShops(coordinate: coordinate, range: selectedRange, start: 1, count: pageSize)
+            let results = try await apiClient.searchShops(
+                coordinate: coordinate,
+                range: selectedRange,
+                genre: selectedGenre,
+                budget: selectedBudget,
+                start: 1,
+                count: pageSize
+            )
             shops = results.shop
             resultsAvailable = results.resultsAvailable
         } catch {
@@ -80,7 +93,14 @@ final class SearchViewModel {
         do {
             let nextStart = shops.count + 1         // HotPepperのstartは１始まり
             
-            let results = try await apiClient.searchShops(coordinate: coordinate, range: selectedRange, start: nextStart, count: pageSize)
+            let results = try await apiClient.searchShops(
+                coordinate: coordinate,
+                range: selectedRange,
+                genre: selectedGenre,
+                budget: selectedBudget,
+                start: nextStart,
+                count: pageSize
+            )
             shops.append(contentsOf: results.shop)
             resultsAvailable = results.resultsAvailable
         } catch {

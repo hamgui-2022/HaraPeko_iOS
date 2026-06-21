@@ -103,11 +103,20 @@ struct ResultListView: View {
     }
     
     private var conditionTags: some View {
-        HStack(spacing: 7) {
-            if let locationName = viewModel.locationName {
-                tag(icon: "mappin.and.ellipse", text: locationName, highlighted: true)
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 7) {
+                if let locationName = viewModel.locationName {
+                    tag(icon: "mappin.and.ellipse", text: locationName, highlighted: true)
+                }
+                tag(icon: "scope", text: viewModel.selectedRange.label, highlighted: false)
+                
+                if let genre = viewModel.selectedGenre {        // 選択された時のみ
+                    tag(icon: "fork.knife", text: genre.name, highlighted: false)
+                }
+                if let budget = viewModel.selectedBudget {        // 選択された時のみ
+                    tag(icon: "yensign", text: budget.name, highlighted: false)
+                }
             }
-            tag(icon: "scope", text: viewModel.selectedRange.label, highlighted: false)
         }
     }
     
@@ -118,6 +127,7 @@ struct ResultListView: View {
             
             Text(text)
                 .font(.pretendard(.semiBold, size: 11))
+                .lineLimit(1)
         }
         .foregroundStyle(highlighted ? Color.hpEmber : .hpText)
         .padding(.horizontal, 11)
