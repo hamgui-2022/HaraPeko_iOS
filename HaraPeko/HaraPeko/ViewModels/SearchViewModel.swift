@@ -9,7 +9,6 @@
 //
 
 import CoreLocation
-import MapKit
 import Observation
 
 @MainActor
@@ -115,6 +114,8 @@ final class SearchViewModel {
     }
     
     /// 現在地の座標から地名を求める。座標が変わるたびにViewから呼ぶ
+    private let geocoder = CLGeocoder()
+    
     func reverseGeocode() {
         guard let coordinate else {
             locationName = nil
@@ -122,10 +123,8 @@ final class SearchViewModel {
         }
         let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
         Task {
-            guard let request = MKReverseGeocodingRequest(location: location) else { return }
-            let mapItems = try? await request.mapItems
-            // 整形済みの短い住所を優先。なければ地点名にフォールバック
-            let name = mapItems?.first?.address?.shortAddress ?? mapItems?.first?.name
+            let placemarks = try? await geocoder.reverseGeocodeLocation(location, preferredLocale: Locale(identifier: "ja_JP"))
+            let name = placemarks?.first.flatMap(Self.placeName(from:))
             await MainActor.run { locationName = name }
         }
     }
