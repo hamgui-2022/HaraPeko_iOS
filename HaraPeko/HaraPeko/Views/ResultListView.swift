@@ -108,6 +108,10 @@ struct ResultListView: View {
                 tag(icon: "mappin.and.ellipse", text: locationName, highlighted: true)
             }
             tag(icon: "scope", text: viewModel.selectedRange.label, highlighted: false)
+            
+            if let genre = viewModel.selectedGenre {        // 選択された時のみ
+                tag(icon: "fork.knife", text: genre.name, highlighted: false)
+            }
         }
     }
     

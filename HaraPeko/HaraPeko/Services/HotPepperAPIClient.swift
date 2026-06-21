@@ -30,12 +30,14 @@ struct HotPepperAPIClient {
     /// 現在地と検索半径で飲食店を検索する。start/count でページング可能
     func searchShops(coordinate: CLLocationCoordinate2D,
                      range: SearchRange,
+                     genre: SearchGenre? = nil,
                      start: Int = 1,
                      count: Int = 20) async throws -> SearchResponse.Results {
         guard var components = URLComponents(string: endpoint) else {
             throw HotPepperAPIError.invalidURL
         }
-        components.queryItems = [
+        
+        var items: [URLQueryItem] = [
             URLQueryItem(name: "key", value: AppConfig.hotPepperAPIKey),
             URLQueryItem(name: "lat", value: String(coordinate.latitude)),
             URLQueryItem(name: "lng", value: String(coordinate.longitude)),
@@ -44,6 +46,11 @@ struct HotPepperAPIClient {
             URLQueryItem(name: "count", value: String(count)),
             URLQueryItem(name: "format", value: "json"),
         ]
+        if let genre {      // 選択時のみに追加
+            items.append(URLQueryItem(name: "genre", value: genre.rawValue))
+        }
+        components.queryItems = items
+        
         guard let url = components.url else {
             throw HotPepperAPIError.invalidURL
         }

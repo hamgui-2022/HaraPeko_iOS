@@ -35,6 +35,7 @@ struct SearchView: View {
                         radiusSection
                         
                         // TODO: ／ジャンル／キーワード／予算
+                        genreSection
                         
                         if let error = viewModel.errorMessage {
                             Text(error)
@@ -266,8 +267,59 @@ struct SearchView: View {
         .buttonStyle(.plain)
     }
     
-    // MARK: - 検索ボタン（固定CTA）
+    // MARK: - ジャンルセクション
+    private var genreSection: some View {
+        VStack(alignment: .leading, spacing: 11) {
+            HStack(spacing: 8) {
+                Text("ジャンル")
+                    .font(.pretendard(.bold, size: 13))
+                    .foregroundStyle(.hpText)
+                
+                Text("任意")
+                    .font(.pretendard(.semiBold, size: 9))
+                    .foregroundStyle(.hpSubText)
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 2)
+                    .overlay(
+                        Capsule()
+                            .stroke(Color.hpLine, lineWidth: 1)
+                    )
+            }
+            
+            FlowLayout(spacing: 8) {
+                genreChip(title: "すべて", isSelected: viewModel.selectedGenre == nil) {
+                    viewModel.selectedGenre = nil
+                }
+                
+                ForEach(SearchGenre.allCases) { genre in
+                    genreChip(title: genre.name, isSelected: viewModel.selectedGenre == genre) {
+                        viewModel.selectedGenre = genre
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
     
+    private func genreChip(title: String,
+                           isSelected: Bool,
+                           action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(.pretendard(isSelected ? .semiBold : .medium, size: 13))
+                .foregroundStyle(isSelected ? Color.hpEmber : .hpSubText)
+                .padding(.horizontal, 15)
+                .padding(.vertical, 10)
+                .background(
+                    Capsule()
+                        .fill(isSelected ? Color.hpEmberDim : Color.hpSurface)
+                        .stroke(isSelected ? Color.hpEmber : Color.hpLine, lineWidth: 1)
+                )
+        }
+        .buttonStyle(.plain)
+    }
+    
+    // MARK: - 検索ボタン（固定CTA）
     private var searchButton: some View {
         Button {
             Task {
