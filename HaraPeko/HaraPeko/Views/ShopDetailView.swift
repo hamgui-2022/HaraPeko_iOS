@@ -28,6 +28,9 @@ struct ShopDetailView: View {
                     actionRow.padding(.top, 18)
                     infoCard.padding(.top, 20)
                     mapSection.padding(.top, 18)
+                    
+                    HotPepperCredit()
+                        .padding(.top, 22)
                 }
                 .padding(.horizontal, 18)
                 .padding(.bottom, 24)

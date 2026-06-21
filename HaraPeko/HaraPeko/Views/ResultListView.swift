@@ -39,6 +39,10 @@ struct ResultListView: View {
                     }
                     .padding(.horizontal, 18)
                     .padding(.vertical, 14)
+                    
+                    HotPepperCredit()
+                        .padding(.horizontal, 18)
+                        .padding(.bottom, 16)
                 }
             }
         }

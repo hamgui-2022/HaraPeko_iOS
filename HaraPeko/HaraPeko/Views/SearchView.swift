@@ -41,6 +41,9 @@ struct SearchView: View {
                                 .font(.pretendard(.medium, size: 12))
                                 .foregroundStyle(.red)
                         }
+                        
+                        HotPepperCredit(showsImageCredit: false)
+                            .padding(.top, 8)
                     }
                     .padding(.horizontal, 18)
                     .padding(.top, 8)
