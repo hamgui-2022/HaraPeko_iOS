@@ -36,12 +36,22 @@ final class SearchViewModel {
     
     /// 検索結果の店舗一覧
     var shops: [Shop] = []
+    /// 該当総件数（ページング終了判定に使用）
+    var resultsAvailable = 0
     /// 検索中フラグ
     var isLoading = false
+    /// 追加読み込み中フラグ
+    var isLoadingMore = false
     /// エラーメッセージ（なけらばnil）
     var errorMessage: String?
     
     private let apiClient = HotPepperAPIClient()
+    private let pageSize = 20
+    
+    /// まだ読み込める結果があるか
+    var canLoadMore: Bool {
+        shops.count < resultsAvailable
+    }
     
     /// 現在地と検索半径で飲食店を検索
     func search() async {
@@ -52,12 +62,31 @@ final class SearchViewModel {
         isLoading = true
         errorMessage = nil
         do {
-            shops = try await apiClient.searchShops(coordinate: coordinate, range: selectedRange)
+            let results = try await apiClient.searchShops(coordinate: coordinate, range: selectedRange, start: 1, count: pageSize)
+            shops = results.shop
+            resultsAvailable = results.resultsAvailable
         } catch {
             errorMessage = error.localizedDescription
             shops = []
+            resultsAvailable = 0
         }
         isLoading = false
+    }
+    
+    /// 次のページを読み込んで結果に追加
+    func loadMore() async {
+        guard !isLoadingMore, canLoadMore, let coordinate else { return }
+        isLoadingMore = true
+        do {
+            let nextStart = shops.count + 1         // HotPepperのstartは１始まり
+            
+            let results = try await apiClient.searchShops(coordinate: coordinate, range: selectedRange, start: nextStart, count: pageSize)
+            shops.append(contentsOf: results.shop)
+            resultsAvailable = results.resultsAvailable
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        isLoadingMore = false
     }
     
     /// 画面表示時に呼ぶ。位置情報の許可をリクエスト

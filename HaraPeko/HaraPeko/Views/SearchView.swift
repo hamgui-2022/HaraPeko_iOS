@@ -58,12 +58,7 @@ struct SearchView: View {
                 viewModel.reverseGeocode()
             }
             .navigationDestination(isPresented: $showResults) {
-                ResultListView(
-                    shops: viewModel.shops,
-                    locationName: viewModel.locationName,
-                    range: viewModel.selectedRange,
-                    userCoordinate: viewModel.coordinate
-                )
+                ResultListView(viewModel: viewModel)        // データの代わりにviewModel
             }
         }
     }

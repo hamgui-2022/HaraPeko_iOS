@@ -27,9 +27,11 @@ enum HotPepperAPIError: LocalizedError {
 struct HotPepperAPIClient {
     private let endpoint = "https://webservice.recruit.co.jp/hotpepper/gourmet/v1/"
     
-    /// 現在地と検索半径で飲食店を検索する
+    /// 現在地と検索半径で飲食店を検索する。start/count でページング可能
     func searchShops(coordinate: CLLocationCoordinate2D,
-                     range: SearchRange) async throws -> [Shop] {
+                     range: SearchRange,
+                     start: Int = 1,
+                     count: Int = 20) async throws -> SearchResponse.Results {
         guard var components = URLComponents(string: endpoint) else {
             throw HotPepperAPIError.invalidURL
         }
@@ -38,7 +40,8 @@ struct HotPepperAPIClient {
             URLQueryItem(name: "lat", value: String(coordinate.latitude)),
             URLQueryItem(name: "lng", value: String(coordinate.longitude)),
             URLQueryItem(name: "range", value: String(range.rawValue)),
-            URLQueryItem(name: "count", value: "20"),
+            URLQueryItem(name: "start", value: String(start)),
+            URLQueryItem(name: "count", value: String(count)),
             URLQueryItem(name: "format", value: "json"),
         ]
         guard let url = components.url else {
@@ -54,7 +57,7 @@ struct HotPepperAPIClient {
         }
         
         do {
-            return try JSONDecoder().decode(SearchResponse.self, from: data).results.shop
+            return try JSONDecoder().decode(SearchResponse.self, from: data).results
         } catch {
             throw HotPepperAPIError.decodingFailed
         }
