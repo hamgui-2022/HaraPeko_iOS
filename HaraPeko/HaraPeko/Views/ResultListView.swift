@@ -30,8 +30,7 @@ struct ResultListView: View {
                     LazyVStack(spacing: 11) {
                         ForEach(shops) { shop in
                             NavigationLink {
-                                // TODO: 店舗詳細画面
-                                Text(shop.name)
+                                ShopDetailView(shop: shop)
                             } label: {
                                 ShopRow(shop: shop, distance: distanceText(for: shop))
                             }
@@ -40,6 +39,10 @@ struct ResultListView: View {
                     }
                     .padding(.horizontal, 18)
                     .padding(.vertical, 14)
+                    
+                    HotPepperCredit()
+                        .padding(.horizontal, 18)
+                        .padding(.bottom, 16)
                 }
             }
         }
