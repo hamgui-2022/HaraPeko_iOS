@@ -34,8 +34,10 @@ struct SearchView: View {
                         
                         radiusSection
                         
-                        // TODO: ／ジャンル／キーワード／予算
+                        // TODO: キーワード
                         genreSection
+                        
+                        budgetSection
                         
                         if let error = viewModel.errorMessage {
                             Text(error)
@@ -287,12 +289,12 @@ struct SearchView: View {
             }
             
             FlowLayout(spacing: 8) {
-                genreChip(title: "すべて", isSelected: viewModel.selectedGenre == nil) {
+                filterChip(title: "すべて", isSelected: viewModel.selectedGenre == nil) {
                     viewModel.selectedGenre = nil
                 }
                 
                 ForEach(SearchGenre.allCases) { genre in
-                    genreChip(title: genre.name, isSelected: viewModel.selectedGenre == genre) {
+                    filterChip(title: genre.name, isSelected: viewModel.selectedGenre == genre) {
                         viewModel.selectedGenre = genre
                     }
                 }
@@ -301,7 +303,42 @@ struct SearchView: View {
         }
     }
     
-    private func genreChip(title: String,
+    // MARK: - 予算セクション
+    private var budgetSection: some View {
+        VStack(alignment: .leading, spacing: 11) {
+            HStack(spacing: 8) {
+                Text("予算（一人あたり）")
+                    .font(.pretendard(.bold, size: 13))
+                    .foregroundStyle(.hpText)
+                
+                Text("任意")
+                    .font(.pretendard(.semiBold, size: 9))
+                    .foregroundStyle(.hpSubText)
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 2)
+                    .overlay(
+                        Capsule()
+                            .stroke(Color.hpLine, lineWidth: 1)
+                    )
+            }
+            
+            FlowLayout(spacing: 8) {
+                filterChip(title: "指定なし", isSelected: viewModel.selectedBudget == nil) {
+                    viewModel.selectedBudget = nil
+                }
+                
+                ForEach(SearchBudget.allCases) { budget in
+                    filterChip(title: budget.name, isSelected: viewModel.selectedBudget == budget) {
+                        viewModel.selectedBudget = budget
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+    
+    // MARK: - フィルターチップ（ジャンル・予算 共通）
+    private func filterChip(title: String,
                            isSelected: Bool,
                            action: @escaping () -> Void) -> some View {
         Button(action: action) {

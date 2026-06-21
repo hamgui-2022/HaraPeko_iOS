@@ -21,6 +21,9 @@ final class SearchViewModel {
     /// 選択中のジャンル（nil = すべて / 絞り込みなし）
     var selectedGenre: SearchGenre?
     
+    /// 選択中の予算（nil = 指定なし）
+    var selectedBudget: SearchBudget?
+    
     /// 位置情報サービス
     let locationManager = LocationManager()
     
@@ -69,6 +72,7 @@ final class SearchViewModel {
                 coordinate: coordinate,
                 range: selectedRange,
                 genre: selectedGenre,
+                budget: selectedBudget,
                 start: 1,
                 count: pageSize
             )
@@ -93,6 +97,7 @@ final class SearchViewModel {
                 coordinate: coordinate,
                 range: selectedRange,
                 genre: selectedGenre,
+                budget: selectedBudget,
                 start: nextStart,
                 count: pageSize
             )

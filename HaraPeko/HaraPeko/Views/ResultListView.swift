@@ -112,6 +112,9 @@ struct ResultListView: View {
             if let genre = viewModel.selectedGenre {        // 選択された時のみ
                 tag(icon: "fork.knife", text: genre.name, highlighted: false)
             }
+            if let budget = viewModel.selectedBudget {        // 選択された時のみ
+                tag(icon: "yensign", text: budget.name, highlighted: false)
+            }
         }
     }
     

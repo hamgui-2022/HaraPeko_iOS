@@ -31,6 +31,7 @@ struct HotPepperAPIClient {
     func searchShops(coordinate: CLLocationCoordinate2D,
                      range: SearchRange,
                      genre: SearchGenre? = nil,
+                     budget: SearchBudget? = nil,
                      start: Int = 1,
                      count: Int = 20) async throws -> SearchResponse.Results {
         guard var components = URLComponents(string: endpoint) else {
@@ -48,6 +49,9 @@ struct HotPepperAPIClient {
         ]
         if let genre {      // 選択時のみに追加
             items.append(URLQueryItem(name: "genre", value: genre.rawValue))
+        }
+        if let budget {      // 選択時のみに追加
+            items.append(URLQueryItem(name: "budget", value: budget.rawValue))
         }
         components.queryItems = items
         
