@@ -29,7 +29,7 @@
 - 位置・地図：CoreLocation / MapKit
 
 ## 動作環境
-- iOS 26.0 以上
+- iOS 18.0 以上
 - Xcode 26.3
 
 ## セットアップ
