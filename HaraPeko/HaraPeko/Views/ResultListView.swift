@@ -5,17 +5,14 @@
 //  Created by 이재혁 on 6/20/26.
 //
 //  ②検索結果画面
-//  検索条件と件数のヘッダー+店舗カードの一覧
+//  検索条件と件数のヘッダー+店舗カードの一覧（ページング対応）
 //
 
 import SwiftUI
 import CoreLocation
 
 struct ResultListView: View {
-    let shops: [Shop]
-    let locationName: String?
-    let range: SearchRange
-    let userCoordinate: CLLocationCoordinate2D?
+    let viewModel: SearchViewModel
     
     @Environment(\.dismiss) private var dismiss
     
@@ -23,12 +20,12 @@ struct ResultListView: View {
         ZStack {
             Color.hpBackground.ignoresSafeArea()
             
-            if shops.isEmpty {
+            if viewModel.shops.isEmpty {
                 emptyState
             } else {
                 ScrollView {
                     LazyVStack(spacing: 11) {
-                        ForEach(shops) { shop in
+                        ForEach(viewModel.shops) { shop in
                             NavigationLink {
                                 ShopDetailView(shop: shop)
                             } label: {
@@ -36,13 +33,15 @@ struct ResultListView: View {
                             }
                             .buttonStyle(.plain)
                         }
+                        
+                        loadMoreFooter
+                        
+                        HotPepperCredit()
+                            .padding(.top, 4)
+                            .padding(.bottom, 16)
                     }
                     .padding(.horizontal, 18)
                     .padding(.vertical, 14)
-                    
-                    HotPepperCredit()
-                        .padding(.horizontal, 18)
-                        .padding(.bottom, 16)
                 }
             }
         }
@@ -92,7 +91,7 @@ struct ResultListView: View {
     }
     
     private var countText: Text {
-        var count = AttributedString("\(shops.count)")
+        var count = AttributedString("\(viewModel.resultsAvailable)")
         count.font = .pretendard(.bold, size: 11)
         count.foregroundColor = .hpMoon
 
@@ -105,10 +104,10 @@ struct ResultListView: View {
     
     private var conditionTags: some View {
         HStack(spacing: 7) {
-            if let locationName {
+            if let locationName = viewModel.locationName {
                 tag(icon: "mappin.and.ellipse", text: locationName, highlighted: true)
             }
-            tag(icon: "scope", text: range.label, highlighted: false)
+            tag(icon: "scope", text: viewModel.selectedRange.label, highlighted: false)
         }
     }
     
@@ -147,7 +146,7 @@ struct ResultListView: View {
     
     /// 現在地から店舗までの距離を文字列に（300m / 1.2km）
     private func distanceText(for shop: Shop) -> String? {
-        guard let userCoordinate else { return nil }
+        guard let userCoordinate = viewModel.coordinate else { return nil }
         let user = CLLocation(latitude: userCoordinate.latitude, longitude: userCoordinate.longitude)
         let shopLocation = CLLocation(latitude: shop.lat, longitude: shop.lng)
         let meters = user.distance(from: shopLocation)
@@ -155,5 +154,40 @@ struct ResultListView: View {
         return meters < 1000
         ? "\(Int(meters))m"
         : String(format: "%.1fkm", meters / 1000)
+    }
+    
+    // MARK: - もっと見る
+    
+    @ViewBuilder
+    private var loadMoreFooter: some View {
+        if viewModel.canLoadMore {
+            Button {
+                Task { await viewModel.loadMore() }
+            } label: {
+                HStack(spacing: 8) {
+                    if viewModel.isLoadingMore {
+                        ProgressView()
+                            .tint(.hpText)
+                    } else {
+                        Text("もっと見る")
+                            .font(.pretendard(.semiBold, size: 14))
+                        
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 14))
+                    }
+                }
+                .foregroundStyle(.hpText)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(
+                    RoundedRectangle(cornerRadius: 13)
+                        .fill(Color.hpSurface)
+                        .stroke(Color.hpLine, lineWidth: 1)
+                )
+            }
+            .buttonStyle(.plain)
+            .disabled(viewModel.isLoadingMore)
+            .padding(.top, 7)
+        }
     }
 }
